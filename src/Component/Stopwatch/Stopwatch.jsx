@@ -4,12 +4,13 @@ const MainPage = () => {
   let [sec, setSec] = useState(0);
   let [min, setMin] = useState(0);
   let [hour, setHour] = useState(0);
-
+  let [showButton, setShowButton] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
   const timerRef = useRef(null);
 
   const handlestart = () => {
+    setShowButton(true);
     setIsActive(true);
     timerRef.current = setInterval(() => {
       setSec((sec) => sec + 1);
@@ -17,6 +18,7 @@ const MainPage = () => {
     document.getElementById("start").classList.add("disabled");
     document.getElementById("reset").classList.remove("disabled");
     document.getElementById("pause").classList.remove("disabled");
+    document.getElementById("lap-container").classList.remove("disabled");
   };
 
   const handlePause = () => {
@@ -27,6 +29,7 @@ const MainPage = () => {
   };
   const handleReset = () => {
     setIsActive(false);
+    setShowButton(false);
     clearInterval(timerRef.current);
     document.getElementById("start").classList.remove("disabled");
     document.getElementById("reset").classList.add("disabled");
@@ -34,6 +37,18 @@ const MainPage = () => {
     setSec(0);
     setMin(0);
     setHour(0);
+    const list = document.getElementById("ul");
+    while (list.hasChildNodes()) {
+      list.removeChild(list.firstChild);
+    }
+  };
+  const handleLap = async () => {
+    var li = await document.createElement(`li`);
+    li.textContent = `${
+      timelist.hour + "h : " + timelist.min + "m : " + timelist.sec + "s"
+    }`;
+    var ul = await document.getElementById("ul");
+    ul.appendChild(li);
   };
 
   const timelist = {
@@ -55,7 +70,7 @@ const MainPage = () => {
 
   return (
     <div className="container">
-      <div className="watch-interface">
+      <div className="watch">
         <div className="watch-timers">
           <div className="hours">
             <h1 className="value">{timelist.hour}</h1>
@@ -83,7 +98,11 @@ const MainPage = () => {
           <button className="pause disabled" id="pause" onClick={handlePause}>
             Pause
           </button>
+          {showButton && <button onClick={handleLap}>Lap</button>}
         </div>
+      </div>
+      <div className="lap-container disabled" id="lap-container">
+        <ul id="ul"></ul>
       </div>
     </div>
   );
